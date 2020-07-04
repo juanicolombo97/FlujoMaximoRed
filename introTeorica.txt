@@ -1,0 +1,6 @@
+Consigna:
+Se tiene una red (grafo simple, dirigido y con peso).
+Hay solo un vertice fuente,sin arcos de llegada.
+Se tiene un vertice deposito, sin arcos de salida.
+El peso es un numero positivo.
+Dada una red con N vertices ( 5 <= N <= 15), obtener el flujo maximo de la misma y mostrar el camino.
