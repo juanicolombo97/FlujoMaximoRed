@@ -38,7 +38,6 @@ section .data
 
 ;---Variables utilizadas en el BFS.  
     padreVertices               dq      -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
-    contadorPadre               dq      0
     verticesVisitados           dq      -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1  ;Inicio todos loc vertices como no visitados = -1 , visitados = 0
     contadorVerticesVisitados   dq      0
     punteroCola                 dq      0
@@ -212,18 +211,23 @@ agregarVerticeACola:
     add         qword[almacenamientoVerticesCOla],8
     add         qword[contadorColaVertices],1
 
+
+;Agrego el pagro
+agregarPadre:
+    mov         rdi,[verticeActual]
+    mov         rsi,[contadorLoopBFS]
+    imul        rsi,8
+    mov         qword[padreVertices+rsi],rdi
+
+
 ;Agrego 1 al contador
 siguienteVertice:
     add         qword[contadorLoopBFS],1
     jmp         inicioForBFS
 
 
-
 ;EL BFS termina
 finBFS:
-    mov rdi,formatNUm
-    mov rsi,[verticesVisitados+24]
-    call printf
   
 ret
 
