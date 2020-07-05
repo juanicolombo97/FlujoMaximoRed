@@ -175,8 +175,23 @@ inicioForBFS:
     imul        rdi,qword[longitudELementos]
 
 ;Me fijo si el vertice fue visitado
-    cmp         qword[verticesVisitados+rdi],0
+    mov         rsi,qword[verticesVisitados+rdi]
+
+
+    cmp         rsi,0
     je          siguienteVertice
+
+    jmp         visitarVertice
+
+
+
+;Vmarco como visitado al vertice
+visitarVertice:
+
+    mov         rdi,[contadorLoopBFS]
+    imul        rdi,8
+
+    mov         qword[verticesVisitados+rdi],0
 
 
 ;Agrego 1 al contador
@@ -188,9 +203,7 @@ siguienteVertice:
 
 ;EL BFS termina
 finBFS:
-    mov rdi,formatNUm
-    mov rsi,[contadorLoopBFS]
-    call printf
+
 ret
 
 desplazamientoMatriz:
