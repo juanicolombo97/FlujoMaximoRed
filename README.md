@@ -16,6 +16,9 @@ Solucion:
  Como correr el programa:
  
  1- Moverse al directorio donde se tienen los archivos descargados.
+ 
  2- make (para ensamblar y compilar).
+ 
  3- ./main.out para correr el programa.
+ 
  4- Para borrar los ejecutables correr make clean.
