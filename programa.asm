@@ -153,6 +153,7 @@ BFS:
     add         qword[contadorVerticesVisitados],1
 
 inicioWhileBFS:
+
 ;Me fijo si hay elementos en la cola.
     cmp         qword[contadorColaVertices],0
     je          finBFS
@@ -165,6 +166,7 @@ inicioWhileBFS:
 ;Actualizo el puntero de la cola para apuntar a la siguiente posicion y resto el contador.
     add         qword[punteroCola],8
     sub         qword[contadorColaVertices],1
+    mov         qword[contadorLoopBFS],0
 
 inicioForBFS:
 ;Me fijo que el contadorDelLoop no sea igual que la cantidad de vertices.
@@ -219,6 +221,9 @@ siguienteVertice:
 
 ;EL BFS termina
 finBFS:
+    mov rdi,formatNUm
+    mov rsi,[verticesVisitados+24]
+    call printf
   
 ret
 
