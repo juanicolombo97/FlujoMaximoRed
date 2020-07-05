@@ -25,18 +25,14 @@ extern fread
 extern fclose
 extern fgets
 
-;----------------------------------------------------------------------------/
-section .data
-
-section .bss
-
+;-----------------------------------------------------------
 
 section .text
 
 main:
 
     ;LLamo a inicioPrograma para imprimir presentacion.
-    call        impresion
+    call        inicioTp
 
 
 

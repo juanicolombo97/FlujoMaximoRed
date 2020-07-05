@@ -13,23 +13,25 @@ section .data
     modoApertura            db      "r",0
     mensajeError            db      "Error al abrir el archivo",0
 ;---------------------------------------------------------------------------------------------------------------------
-section .bss
-    numeroIngresado     resb    100
-    fileHandle          resq    1
-    archivoInfo         resq    1
-    registroInfo        resb    100  
+section .bss    
+    numeroIngresado     resb        100
+    fileHandle          resq        1
+    archivoInfo         resq        1
+    registroInfo        resb        100
+    inputValido         resb        1  
 
 ;---------------------------------------------------------------------------------------------------------------------
 
 section .text
-impresion:
+
+inicioTp:
     
 
-;------Impresion por pantalla inicio tp.---------
+;Impresion por pantalla inicio tp.
     mov         rdi,mensajeInicio 
     call        puts
 
-;------Impresiones opciones inicio trabajo------
+;mpresiones opciones inicio trabaj
 opcionesComienzoTp:
   
     mov         rdi,mensajeInstrucciones
@@ -54,7 +56,9 @@ opcionesComienzoTp:
     call        gets
 
 
-;--------Comparo input para ver instruccion
+;omparo input para ver instruccion
+
+    mov         byte[inputValido],"S"
     cmp         byte[numeroIngresado],"1"
     je          inicioPrograma
 
@@ -66,26 +70,30 @@ opcionesComienzoTp:
 
     cmp         byte[numeroIngresado],"4"
     je          finPrograma
-;--------Se fija si el programa debe continuar
 
-    cmp         byte[numeroIngresado],"n"
+;Se fija si el programa debe continuar
+
+    cmp         byte[inputValido],"N"
     je          limpiarTerminal
-    call        finPrograma
+    jmp         opcionesComienzoTp
 
                                             ret
-;---------Funcion que limpia contenido terminal.
+;Limpia contenido terminal.
 limpiarTerminal:
     mov         rdi,limpiarTrm
     call        printf
     jmp         opcionesComienzoTp
                                             ret
-    
+
+;Inciio pruebas programa Flujo Maximo
 inicioPrograma:
-    mov         byte[numeroIngresado],"n"
+    mov         byte[numeroIngresado],"N"
     call        comienzoPrograma
                                             ret
+
+;Informacion sobre el TP
 introTeorica:
-    mov         byte[numeroIngresado],"n"
+    mov         byte[inputValido],"N"
     mov         rdi,archivoInfoTeorica
     mov         rsi,modoApertura
     call        fopen
@@ -97,14 +105,15 @@ introTeorica:
 
     call        lecturaArchivo
     ret
-                                            
+
+;Creditos                                       
 creditos:
-    mov         byte[numeroIngresado],"n"
+    mov         byte[inputValido],"N"
     call        creditosTp
     call        finPrograma
                 
                                             ret
-
+;Leo el archivo
 lecturaArchivo:
     mov         rdi,registroInfo
     mov         rsi,140
@@ -118,14 +127,17 @@ lecturaArchivo:
     call        puts
     jmp         lecturaArchivo
 
+;Si hay error en apertura archivo
 errorArchivo:
     mov         rdi,errorArchivo
     call        printf
 
+;Cierro el archivo
 EOF:
     mov         rdi,[fileHandle]
     call        fclose   
 
+;Fin programa
 finPrograma:
    
                                             ret

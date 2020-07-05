@@ -3,26 +3,27 @@
 
 section .data
 
-    msgInicioProg               db      "Comienzo pruebas ....",10,0
-    ;Mensajes Error
+    ;Variable que almacena el flujo maximo 
+    flujoMaximo                 dq      0
 
+    ;Mensaje inicio
+    msgInicioProg               db      "Comienzo pruebas ....",10,0
+
+    ;Mensajes Error
     mensajeErrorMenosVertices   db      "Error se requiere un Grafo de mas de 5 vertices",10,0
     mensajeErrorMasVertices     db      "Error se requiere un Grafo de menos de 15 vertices",10,0
 
     ;Datos Prueba primer Grafo
-
     cantidadVerticesPrueba1     db       4
     mensajePruebaUno            db      "Prueba 1: Grafo con 4 vertices da error.",0
     grafoPrueba1                dq       0
 
     ;Datos Prueba segundo grafo
-
     cantidadVerticesPrueba2     db       16
     mensajePruebaDos            db      "Prueba 2: Grafo con 16 vertices da error.",0
     grafoPrueba2                dq       0
 
     ;Datos Prueba tercer grafo
-
     grafoPrueba3                dq      0,16,13,0,0,0
                                 dq      0,0,10,12,0,0
                                 dq      0,4,0,0,14,0
@@ -32,9 +33,6 @@ section .data
     
     cantidadVerticesPrueba3     db      6
     mensajePruebaTres           db      "Prueba 3: Grafo con 6 vertice, debe dar flujo igual a: 23",0
-
-
-    flujoMaximo                 dq      0                                             ;Variable que almacena el flujo maximo 
 
 ;---Variables utilizadas en el BFS.  
     padreVertices               dq      -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
@@ -49,7 +47,7 @@ section .data
     filaActual                  dq      0
     columnaActual               dq      0
     formatNUm                   db      "padreVerticeFIN: %hi ",10,0
-    llegoACamino                      db      "Encontro camino",0
+    llegoACamino                db      "Encontro camino",0
 
 
 section .bss
@@ -93,7 +91,10 @@ finProg:
     ret
 
 
-;------------Rutinas Internas-------------------
+;*********************Rutinas Internas**********************
+;                                                          *
+;                                                          *
+;***********************************************************
 
 
 inciarPrueba:
@@ -119,6 +120,8 @@ inciarPrueba:
 
     mov         rdi,llegoACamino
     call        puts
+
+    
 
 finPrueba:
     ret
