@@ -200,6 +200,15 @@ visitarVertice:
 
     mov         qword[verticesVisitados+rdi],0
 
+;Agrego el vertice a la cola
+agregarVerticeACola:
+
+    mov         rdi,[almacenamientoVerticesCOla]
+    mov         rsi,[contadorLoopBFS]
+    mov         [colaVerticesBfs+rdi],rsi
+    
+    add         qword[almacenamientoVerticesCOla],8
+    add         qword[contadorColaVertices],1
 
 ;Agrego 1 al contador
 siguienteVertice:
@@ -210,9 +219,7 @@ siguienteVertice:
 
 ;EL BFS termina
 finBFS:
-    mov rdi,formatNUm
-    mov rsi,[verticesVisitados+40]
-    call printf
+  
 ret
 
 desplazamientoMatriz:
