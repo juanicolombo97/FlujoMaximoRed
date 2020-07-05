@@ -49,7 +49,10 @@ section .data
     contadorLoopBFS             dq      0
     filaActual                  dq      0
     columnaActual               dq      0
-    formatNUm                     db      "padreVerticeFIN: %hi ",10,0
+    formatNUm                   db      "padreVerticeFIN: %hi ",10,0
+    Acatoy                      db     "acatoy",0
+
+
 section .bss
     mensajePrueba               resb      100
     cantidadVertices            resb      1
@@ -149,8 +152,31 @@ BFS:
     mov         qword[verticesVisitados+rdx],0
     add         qword[contadorVerticesVisitados],1
 
-    
+inicioWhileBFS:
+;Me fijo si hay elementos en la cola.
+    cmp         qword[contadorColaVertices],0
+    je          finBFS
 
+;Saco de la cola el primer elemento.
+    mov         rdi,[punteroCola]
+    mov         rdi,[colaVerticesBfs+rdi]
+    mov         qword[verticeActual],rdi
+
+;Actualizo el puntero de la cola para apuntar a la siguiente posicion y resto el contador.
+    add         qword[punteroCola],8
+    sub         qword[contadorColaVertices],1
+
+inicioForBFS:
+;Me fijo que el contadorDelLoopNoSea igual que la cantidad de vertices.
+    mov         rdi,qword[contadorLoopBFS]
+    cmp         qword[cantidadVertices],rdi
+    je          inicioWhileBFS
+
+    imul        rdi,qword[longitudELementos]
+
+;Me fijo si el vertice fue visitado
+    cmp         qword[verticesVisitados+rdi],0
+    je          finBFS
 
 
 finBFS:
