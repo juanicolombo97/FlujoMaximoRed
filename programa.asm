@@ -148,10 +148,6 @@ BFS:
     call        printf
 
 ;Marco el vertice inicial como visitado.
-    mov         rdx,[contadorVerticesVisitados]
-    mov         qword[verticesVisitados+rdx],0
-    add         qword[contadorVerticesVisitados],1
-
 
 
 
