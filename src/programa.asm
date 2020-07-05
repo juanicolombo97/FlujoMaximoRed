@@ -49,7 +49,7 @@ section .data
     filaActual                  dq      0
     columnaActual               dq      0
     formatNUm                   db      "padreVerticeFIN: %hi ",10,0
-    Acatoy                      db     "acatoy",0
+    llegoACamino                      db      "Encontro camino",0
 
 
 section .bss
@@ -106,8 +106,19 @@ inciarPrueba:
     cmp         qword[pruebaDioError],1
     je          finPrueba
     ;Busco un camino con bfs
-    call        BFS
+    call        BFS 
 
+    ;Me fijo si hay un camino disponible
+    mov         rdi,[cantidadVertices]
+    sub         rdi,1
+    imul        rdi,[longitudELementos]
+
+    mov         rsi,[verticesVisitados+rdi]
+    cmp         rsi,0
+    jl          finPrueba
+
+    mov         rdi,llegoACamino
+    call        puts
 
 finPrueba:
     ret
@@ -228,9 +239,10 @@ siguienteVertice:
 
 ;EL BFS termina
 finBFS:
-  
 ret
 
+
+;Guarda en el rbx la posicion en la matriz adyacencia vertice.
 desplazamientoMatriz:
     mov         rax,qword[filaActual]
     imul        rax,qword[longitudELementos]
@@ -243,15 +255,19 @@ desplazamientoMatriz:
 
     add         rbx,rax
 ret
-;------------Mensajes Error--------------------
+;*********************Mensajes Error************************
+;                                                          *
+;                                                          *
+;***********************************************************
 
-
+;Se lanza cuadno el grafo tiene menos de 4 vertices.
 GrafoPocosVertices:
     mov         rdi,mensajeErrorMenosVertices
     call        puts
     mov        qword[pruebaDioError],1
     ret
 
+;Se lanza cuando el grafo tiene mas de 15 vertices.
 grafoMuchosVertices:
     mov         rdi,mensajeErrorMasVertices
     call        puts
