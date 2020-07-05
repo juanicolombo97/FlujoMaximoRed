@@ -141,14 +141,15 @@ BFS:
     mov         qword[colaVerticesBfs+0],0
     add         qword[contadorColaVertices],1
 
+;Actualizo la variable para almacenar el prox elemento en el siguiente lugar.
     add         qword[almacenamientoVerticesCOla],8
 
-    mov         rdi,formatNUm
-    mov         rsi,[colaVerticesBfs+0]
-    call        printf
-
 ;Marco el vertice inicial como visitado.
+    mov         rdx,[contadorVerticesVisitados]
+    mov         qword[verticesVisitados+rdx],0
+    add         qword[contadorVerticesVisitados],1
 
+    
 
 
 
