@@ -167,7 +167,7 @@ inicioWhileBFS:
     sub         qword[contadorColaVertices],1
 
 inicioForBFS:
-;Me fijo que el contadorDelLoopNoSea igual que la cantidad de vertices.
+;Me fijo que el contadorDelLoop no sea igual que la cantidad de vertices.
     mov         rdi,qword[contadorLoopBFS]
     cmp         qword[cantidadVertices],rdi
     je          inicioWhileBFS
@@ -176,11 +176,21 @@ inicioForBFS:
 
 ;Me fijo si el vertice fue visitado
     cmp         qword[verticesVisitados+rdi],0
-    je          finBFS
+    je          siguienteVertice
 
 
+;Agrego 1 al contador
+siguienteVertice:
+    add         qword[contadorLoopBFS],1
+    jmp         inicioForBFS
+
+
+
+;EL BFS termina
 finBFS:
-
+    mov rdi,formatNUm
+    mov rsi,[contadorLoopBFS]
+    call printf
 ret
 
 desplazamientoMatriz:
