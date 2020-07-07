@@ -57,8 +57,11 @@ section .data
     columnaActual               dq      0
     formatNUm                   db      "El flujo maximo es: %i ",10,0
     llegoACamino                db      "Encontro camino",0
-
-
+    caminoRecorrido  times 225  dq      -1
+    contadorCamino              dq      0
+    impresionCamino             db      "%hi-",0
+    impresionULtimoTramo        db      "%hi",10,0
+    msgCamino                   db      "El camino es: ",0
 section .bss
     mensajePrueba               resb    100
     cantidadVertices            resb    1
@@ -93,10 +96,36 @@ comienzoPrograma:
     mov         rdx,[grafoPrueba3]
     call        inciarPrueba
 
+    ;Imprimo el resultado de flujo.
     mov         rdi,formatNUm
-    mov rsi,[flujoMaximo]
-    call printf
+    mov         rsi,[flujoMaximo]
+    call        printf
 
+    mov         rdi,msgCamino
+    call        puts
+
+    sub         qword[contadorCamino],1
+;Imprimo el camino recorrido
+calculoCamino:
+    mov        rdx,[contadorCamino]
+    imul       rdx,8
+    mov        rdi,impresionCamino
+    mov        rsi,[caminoRecorrido+rdx]
+    call       printf
+    
+    ;Me fijo si llego al final del recorrido
+    cmp        qword[contadorCamino],1
+    je         ultimoTramo
+    
+    sub        qword[contadorCamino],1
+    jmp        calculoCamino
+
+;IMprimo el ultimo tramo
+ultimoTramo:
+    mov        rdi,impresionULtimoTramo
+    mov        rsi,[caminoRecorrido+rdx]
+    call       printf
+ 
 ;Fin Programa
 finProg:
     add         rsp,8
@@ -122,7 +151,7 @@ inciarPrueba:
 ;-----------------------------------Inicio el algoritmo Ford-Fulkerson----------------------------
 comienzoFordFulkerson:
     mov         qword[flujoMaximo],0
-
+    mov         qword[contadorCamino],0
 comienzoWhile:
     ;Busco un camino con bfs
     call        BFS 
@@ -136,6 +165,26 @@ comienzoWhile:
     cmp         rsi,0
     jl          finPrueba
 
+;Agrego el camino
+    mov         rdi,[cantidadVertices]
+    sub         rdi,1
+    mov         qword[verticeDestino],rdi
+agregoCamino:
+    mov         rdi,[contadorCamino]
+    imul        rdi,qword[longitudELementos]
+    mov         rsi,[verticeDestino]
+    mov         qword[caminoRecorrido+rdi],rsi
+    inc         qword[contadorCamino]
+
+;Si verticeDestino no es distinto del inicial no se termino el recorrido.
+    cmp         qword[verticeDestino],0
+    je          busquedaCapacidadMinima
+
+    call        padreVertice
+    mov         qword[verticeDestino],rsi
+    jmp         agregoCamino
+
+busquedaCapacidadMinima:
 ;Busco la menor capacidad a lo largo del camino encontrado, y elijo un valor muy alto de capacidad.
     mov         qword[capacidadMinima],1000000000
     mov         rdx,[cantidadVertices]
