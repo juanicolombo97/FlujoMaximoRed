@@ -1,6 +1,6 @@
 
 section .data
-    mensajeInicio           db      `-----Calculo de red de flujo maximo-----\n`,0     ;Mensaje que muestra titulo inicio.
+    mensajeInicio           db      `-----Calculo de flujo maximo de una red-----\n`,0     ;Mensaje que muestra titulo inicio.
     mensajeInstrucciones    db      `Ingrese uno de los siguientes numeros para continuar: \n`,10,0    ;Mensaje opciones
     mensajeComienzoProg     db      "Presione 1 para comenzar programa.",10,0
     mensajeCreditos         db      "Presione 2 para mostrar los creditos.",10,0
@@ -12,6 +12,8 @@ section .data
     archivoInfoTeorica      db      "introTeorica.txt",0
     modoApertura            db      "r",0
     mensajeError            db      "Error al abrir el archivo",0
+    contadorIntentos        db      0
+    msgMaxIntento           db      "Realizo los maximos intentos",0
 ;---------------------------------------------------------------------------------------------------------------------
 section .bss    
     numeroIngresado     resb        100
@@ -56,8 +58,8 @@ opcionesComienzoTp:
     call        gets
 
 
-;omparo input para ver instruccion
-
+;comparo input para ver instruccion
+    add         byte[contadorIntentos],1
     mov         byte[inputValido],"S"
     cmp         byte[numeroIngresado],"1"
     je          inicioPrograma
@@ -72,16 +74,18 @@ opcionesComienzoTp:
     je          finPrograma
 
 ;Se fija si el programa debe continuar
-
-    cmp         byte[inputValido],"N"
+    cmp         byte[inputValido],"S"
     je          limpiarTerminal
-    jmp         opcionesComienzoTp
 
                                             ret
 ;Limpia contenido terminal.
 limpiarTerminal:
     mov         rdi,limpiarTrm
     call        printf
+    
+    ;Si los intentos llegan a 3 finalizo.
+    cmp         byte[contadorIntentos],3
+    je          maxIntentos
     jmp         opcionesComienzoTp
                                             ret
 
@@ -137,6 +141,12 @@ EOF:
     mov         rdi,[fileHandle]
     call        fclose   
 
+
+;Realizo el maximo de intentos.
+maxIntentos:
+    mov         rdi,msgMaxIntento
+    call        puts
+    
 ;Fin programa
 finPrograma:
    
