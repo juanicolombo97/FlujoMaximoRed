@@ -6,6 +6,12 @@ section .data
     ;Variable que almacena el flujo maximo 
     flujoMaximo                 dq      0
 
+    ;Variable para capacidad minima recorrido.
+    capacidadMinima             dq      0
+
+    ;Vertice destino
+    verticeDestino              dq      0
+
     ;Mensaje inicio
     msgInicioProg               db      "Comienzo pruebas ....",10,0
 
@@ -35,27 +41,27 @@ section .data
     mensajePruebaTres           db      "Prueba 3: Grafo con 6 vertice, debe dar flujo igual a: 23",0
 
 ;---Variables utilizadas en el BFS.  
-    padreVertices               dq      -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+    padreVertices               dq      -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1  ;Vertice en -1 significa que no tiene padre
     verticesVisitados           dq      -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1  ;Inicio todos loc vertices como no visitados = -1 , visitados = 0
     contadorVerticesVisitados   dq      0
     punteroCola                 dq      0
-    colaVerticesBfs             dq      -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1  ;INicio la cola con -1, significa que no hay datos.  
+    colaVerticesBfs             dq      -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1  ;Inicio la cola con -1, significa que no hay datos.  
     contadorColaVertices        dq      0
     almacenamientoVerticesCOla  dq      0
     longitudELementos           dq      8
     contadorLoopBFS             dq      0
     filaActual                  dq      0
     columnaActual               dq      0
-    formatNUm                   db      "padreVerticeFIN: %hi ",10,0
+    formatNUm                   db      "padreVerticeFIN: %i ",10,0
     llegoACamino                db      "Encontro camino",0
 
 
 section .bss
-    mensajePrueba               resb      100
-    cantidadVertices            resb      1
-    grafo                       resq      225
-    verticeActual               resq      1
-    pruebaDioError              resq      1
+    mensajePrueba               resb    100
+    cantidadVertices            resb    1
+    grafo                       resq    225
+    verticeActual               resq    1
+    pruebaDioError              resq    1
 
 section .text
 comienzoPrograma:
@@ -106,6 +112,12 @@ inciarPrueba:
 
     cmp         qword[pruebaDioError],1
     je          finPrueba
+
+;-----------------------------------Inicio el algoritmo Ford-Fulkerson----------------------------
+comienzoFordFulkerson:
+    mov         qword[flujoMaximo],0
+
+comienzoWhile:
     ;Busco un camino con bfs
     call        BFS 
 
@@ -118,12 +130,66 @@ inciarPrueba:
     cmp         rsi,0
     jl          finPrueba
 
-    mov         rdi,llegoACamino
-    call        puts
+;Busco la menor capacidad a lo largo del camino encontrado, y elijo un valor muy alto de capacidad.
+    mov         qword[capacidadMinima],1000000000
+    mov         rdx,[cantidadVertices]
+    sub         rdx,1
+    mov         qword[verticeDestino],rdx
 
+;Busco la menor capacidad hasta llegar al vertice inicial.
+comienzoForMinCapacidad:
+    ;Si el vertice es 0 llege al inicial.
+    cmp         qword[verticeDestino],0
+    je          actualizoFLujo
     
+    ;BUsco la capacidad del verticeDestino en su padre.
+    call        padreVertice
+    mov         qword[filaActual],rsi
+    mov         rdi,qword[verticeDestino]
+    mov         qword[columnaActual],rdi
+    call        desplazamientoMatriz
+
+    ;Obtengo la capacidad
+    mov         rdi,[grafoPrueba3+rbx]
+    cmp         rdi,qword[capacidadMinima]
+    jg          actualizoVertice
+
+    mov         qword[capacidadMinima],rdi
+
+;Actualizo el vertice 
+actualizoVertice:
+    call        padreVertice
+    mov         qword[verticeDestino],rsi
+    jmp         comienzoForMinCapacidad
+
+;Actualizo el flujo
+actualizoFLujo:
+    mov         rdi,[capacidadMinima]
+    mov         qword[flujoMaximo],rdi
+
+    mov         rdx,[cantidadVertices]
+    sub         rdx,1
+    mov         qword[verticeDestino],rdx
+
+;Actualizo las capacidades en el grafo
+actualizoGrafo:
+    ;Si el vertice destino es igual al inicial vuelvo al while
+    cmp         qword[verticeDestino],0
+    je          comienzoWhile
+
 
 finPrueba:
+    mov rdi,llegoACamino
+    call puts
+
+ fin:   
+    ret
+
+;Obtengo el padre del veritce destino
+padreVertice:    
+    mov         rdi,[verticeDestino]
+    imul        rdi,qword[longitudELementos]
+    mov         rsi,[padreVertices+rdi]
     ret
 
 ;ALmaceno datos de las pruebas.
@@ -148,11 +214,30 @@ validarGrafo:
     ret
 
 
-;Recorrido grafo con BFS
-
-
+;----------------------------Recorrido grafo con BFS----------------------------------------
 BFS:
+;Marco todos los nodos como no visitados,la cola sin elementos y los padres en -1.
+    mov         rax,0
+inicializoVariables:
+    cmp         rax,15
+    je          inicializoContadores
 
+    mov         rdx,rax
+    imul        rdx,qword[longitudELementos]
+    mov         qword[padreVertices+rdx],-1
+    mov         qword[verticesVisitados+rdx],-1
+    mov         qword[colaVerticesBfs+rdx],-1
+
+    inc         rax
+    jmp         inicializoVariables
+;Inicializo los contadores en 0.
+inicializoContadores:
+    mov         qword[contadorColaVertices],0
+    mov         qword[punteroCola],0
+    mov         qword[almacenamientoVerticesCOla],0
+
+;Cominezo el BFS
+comienzoBFS:
 ;Agrego a la cola el vertice inicial
     mov         qword[colaVerticesBfs+0],0
     add         qword[contadorColaVertices],1
@@ -166,7 +251,6 @@ BFS:
     add         qword[contadorVerticesVisitados],1
 
 inicioWhileBFS:
-
 ;Me fijo si hay elementos en la cola.
     cmp         qword[contadorColaVertices],0
     je          finBFS
@@ -243,7 +327,7 @@ siguienteVertice:
 ;EL BFS termina
 finBFS:
 ret
-
+;----------------------------Fin recorrido grafo con BFS----------------------------------------
 
 ;Guarda en el rbx la posicion en la matriz adyacencia vertice.
 desplazamientoMatriz:
