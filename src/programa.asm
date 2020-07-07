@@ -12,6 +12,9 @@ section .data
     ;Vertice destino
     verticeDestino              dq      0
 
+    ;Vertice auxiliar
+    verticeAuxiliar             dq      0
+
     ;Mensaje inicio
     msgInicioProg               db      "Comienzo pruebas ....",10,0
 
@@ -52,7 +55,7 @@ section .data
     contadorLoopBFS             dq      0
     filaActual                  dq      0
     columnaActual               dq      0
-    formatNUm                   db      "padreVerticeFIN: %i ",10,0
+    formatNUm                   db      "El flujo maximo es: %i ",10,0
     llegoACamino                db      "Encontro camino",0
 
 
@@ -90,6 +93,9 @@ comienzoPrograma:
     mov         rdx,[grafoPrueba3]
     call        inciarPrueba
 
+    mov         rdi,formatNUm
+    mov rsi,[flujoMaximo]
+    call printf
 
 ;Fin Programa
 finProg:
@@ -165,6 +171,8 @@ actualizoVertice:
 ;Actualizo el flujo
 actualizoFLujo:
     mov         rdi,[capacidadMinima]
+    mov         rsi,[flujoMaximo]
+    add         rdi,rsi
     mov         qword[flujoMaximo],rdi
 
     mov         rdx,[cantidadVertices]
@@ -177,12 +185,41 @@ actualizoGrafo:
     cmp         qword[verticeDestino],0
     je          comienzoWhile
 
+    ;OBtengo el padre del verticeDestino
+    call        padreVertice
+    mov         qword[verticeAuxiliar],rsi
 
+    ;Actualizo las capacidades en los grafos.
+    mov         rdi,[verticeAuxiliar]
+    mov         qword[filaActual],rdi
+    mov         rdi,[verticeDestino]
+    mov         qword[columnaActual],rdi
+    call        desplazamientoMatriz
+
+    mov         rdi,[capacidadMinima]
+    mov         rsi,[grafoPrueba3+rbx]
+    sub         rsi,rdi
+    mov         qword[grafoPrueba3+rbx],rsi
+
+    mov         rdi,[verticeDestino]
+    mov         qword[filaActual],rdi
+    mov         rdi,[verticeAuxiliar]
+    mov         qword[columnaActual],rdi
+    call        desplazamientoMatriz
+
+    mov         rdi,[capacidadMinima]
+    mov         rsi,[grafoPrueba3+rbx]
+    add         rsi,rdi
+    mov         qword[grafoPrueba3+rbx],rsi
+
+    ;Actualizo el verticeDestino
+    call        padreVertice
+    mov         qword[verticeDestino],rsi
+    jmp         actualizoGrafo
+
+
+;Termino la prueba
 finPrueba:
-    mov rdi,llegoACamino
-    call puts
-
- fin:   
     ret
 
 ;Obtengo el padre del veritce destino
