@@ -3,7 +3,7 @@
 
 Consigna:
 
-Dada una red con N vértices (con 5<= N <=15), desarrollar un programa en assembler Intel
+Dada una red con N vértices (con 5<= N <=15), pesado y dirigido, desarrollar un programa en assembler Intel
 80x86 que obtenga el flujo maximal de la misma o lo que es lo mismo, que halle un flujo de valor
 máximo y que muestre por pantalla cual fue el camino que se recorrió para obtener dicho flujo.
 
